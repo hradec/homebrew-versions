@@ -41,12 +41,16 @@ class Mpfr2 < Formula
 
     # Build 32-bit where appropriate, and help configure find 64-bit CPUs
     # Note: This logic should match what the GMP formula does.
-    if MacOS.prefer_64_bit? && !build.build_32_bit?
-      ENV.m64
-      args << "--build=x86_64-apple-darwin"
-    else
-      ENV.m32
-      args << "--build=none-apple-darwin"
+    if OS.mac?
+      if MacOS.prefer_64_bit?  && !build.build_32_bit?
+        ENV.m64
+        args << "--build=x86_64-apple-darwin"
+      else
+        ENV.m32
+        args << "--build=none-apple-darwin"
+      end
+    elsif OS.linux?
+	ENV["LD_LIBRARY_PATH"]="#{gmp4.opt_prefix}/lib/"
     end
 
     system "./configure", *args
